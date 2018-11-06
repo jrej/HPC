@@ -8,8 +8,8 @@
 #include "nrutil.h"
 
 #define N 3
-#define VMIN 2
-#define VMAX 255 //V est entre 2 et 2^m-1 avec m le nombre de bits des donnees ici 8 => https://hal.inria.fr/hal-01130889/document
+#define VMIN 1
+#define VMAX 254 //V est entre 2 et 2^m-1 avec m le nombre de bits des donnees ici 8 => https://hal.inria.fr/hal-01130889/document
 
 int min(int a, int b){
     return a<b ? a:b;
@@ -64,31 +64,30 @@ void routine_SigmaDelta_step0(uint8** I, uint8 **M, uint8 **V, long nrl, long nr
         for(int j = ncl; j < nch; j++)
         {
             M[i][j] = I[i][j];
-            V[i][j] = 10; //On le met a VMIN
+            V[i][j] = (uint8) VMIN;
         }
     }
 }
 
-void routine_SigmaDelta_1step(uint8 **I0, uint8 **I1, uint8** E0, uint8 **V1, uint8 **M1,  long nrl, long nrh, long ncl, long nch )
+void routine_SigmaDelta_1step(uint8 **It_1, uint8 **It, uint8 **Vt_1, uint8 **Vt, uint8 **Mt_1, uint8 **Mt, uint8 **Ot, uint8 **Et, long nrl, long nrh, long ncl, long nch)
 {
-    uint8 **O0 = ui8matrix(nrl, nrh, ncl, nch);
-    uint8 **M0 = ui8matrix(nrl, nrh, ncl, nch);
-    uint8 **V0 = ui8matrix(nrl, nrh, ncl, nch);
+
+	uint8 n = (uint8) N;
+	uint8 vmin = (uint8) VMIN;
+	uint8 vmax = (uint8) VMAX;
 
     for(int i = nrl; i < nrh; i++ ) //Step1 Mt Estimation
     {
         for(int j = ncl; j < nch; j++)
         {
-            if(M1[i][j] < I0[i][j])
-                M0[i][j]  = M1[i][j] + 1;
+            if(Mt_1[i][j] < It[i][j])
+                Mt[i][j]  = Mt_1[i][j] + 1;
 
-            else if(M1[i][j] < I0[i][j])
-                M0[i][j] = M1[i][j] - 1;
+            else if(Mt_1[i][j] < It[i][j])
+                Mt[i][j] = Mt_1[i][j] - 1;
 
             else
-                M0[i][j] = M1[i][j];
-
-
+                Mt[i][j] = Mt_1[i][j];
         }
     }
 
@@ -97,7 +96,7 @@ void routine_SigmaDelta_1step(uint8 **I0, uint8 **I1, uint8** E0, uint8 **V1, ui
     {
         for(int j = ncl; j < nch; j++)
         {
-            O0[i][j] = abs(M0[i][j] - I0[i][j]);
+            Ot[i][j] = abs(Mt[i][j] - It[i][j]);
         }
     }
 
@@ -106,16 +105,16 @@ void routine_SigmaDelta_1step(uint8 **I0, uint8 **I1, uint8** E0, uint8 **V1, ui
     {
         for(int j = ncl; j < nch; j++)
         {
-            if(V1[i][j] < N * O0[i][j])
-                V0[i][j]  = V1[i][j] + 1;
+            if(Vt_1[i][j] < n * Ot[i][j])
+                Vt[i][j]  = Vt_1[i][j] + 1;
 
-            else if(V1[i][j] < N * O0[i][j])
-                V0[i][j] = V1[i][j] - 1;
+            else if(Vt_1[i][j] < n * Ot[i][j])
+                Vt[i][j] = Vt_1[i][j] - 1;
 
             else
-                V0[i][j] = V1[i][j];
+                Vt[i][j] = Vt_1[i][j];
 
-            V0[i][j] = max( min(V0[i][j], VMAX), VMIN);
+            Vt[i][j] = max( min(Vt[i][j], vmax), vmin);
 
 
         }
@@ -125,10 +124,10 @@ void routine_SigmaDelta_1step(uint8 **I0, uint8 **I1, uint8** E0, uint8 **V1, ui
     {
         for(int j = ncl; j < nch; j++)
         {
-            if(O0[i][j] < V0[i][j])
-                E0[i][j] = 0;
+            if(Ot[i][j] < Vt[i][j])
+                Et[i][j] = 0;
             else
-                E0[i][j] = 255;
+                Et[i][j] = 255;
         }
     }
 

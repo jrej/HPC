@@ -2,5 +2,5 @@
 
 
 void routine_FrameDifference(char* nomFichier1, char* nomFichier2, int seuil);
-void routine_SigmaDelta_1step(uint8 **I0, uint8 **I1, uint8** E0, uint8** V1, uint8 **M1,  long nrl, long nrh, long ncl, long nch );
+void routine_SigmaDelta_1step(uint8 **It_1, uint8 **It, uint8 **Vt_1, uint8 **Vt, uint8 **Mt_1, uint8 **Mt, uint8 **Ot, uint8 **Et, long nrl, long nrh, long ncl, long nch);
 void routine_SigmaDelta_step0(uint8** I, uint8 **M, uint8 **V, long nrl, long nrh, long ncl, long nch);
