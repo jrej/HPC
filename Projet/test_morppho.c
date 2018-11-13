@@ -5,7 +5,7 @@
 #include "vnrutil.h"
 #include "nrutil.h"
 #include "morpho_simd.h"
-#include "test_mouvement_SSE2.h"
+#include "test_mouvement_SIMD.h"
 #include "test_morpho.h"
 #include "mouvement.h"
 
