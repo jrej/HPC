@@ -3,8 +3,7 @@
 /* -------------- */
 
 /*
- * Copyright (c) 2000 - 2007, Lionel Lacassagne
- * Ensta version
+ * Copyright (c) 2000 - 2017, Lionel Lacassagne
  */
 
 #include <stdio.h>
@@ -127,13 +126,35 @@ void generate_path_filename_k_ndigit_l_extension(char *path, char *filename, int
   sprintf(complete_filename, format, path, filename, k, l, extension);
 }
 /* ------------------------------ */
+sint32* si32vector(long nl, long nh)
+/* ------------------------------ */
+{
+    sint32 *v;
+    
+    v=(sint32 *)malloc((size_t) ((nh-nl+1+NR_END)*sizeof(sint32)));
+    if (!v) nrerror("allocation failure in si32vector()");
+    if(!v) return NULL;
+    return v-nl+NR_END;
+}
+/* ------------------------------ */
 float32* f32vector(long nl, long nh)
 /* ------------------------------ */
 {
-  float32 *v;
+    float32 *v;
+    
+    v=(float32 *)malloc((size_t) ((nh-nl+1+NR_END)*sizeof(float32)));
+    if (!v) nrerror("allocation failure in f32vector()");
+    if(!v) return NULL;
+    return v-nl+NR_END;
+}
+/* ------------------------------ */
+float64* f64vector(long nl, long nh)
+/* ------------------------------ */
+{
+  float64 *v;
 
-  v=(float32 *)malloc((size_t) ((nh-nl+1+NR_END)*sizeof(float32)));
-  if (!v) nrerror("allocation failure in f32vector()");
+  v=(float64 *)malloc((size_t) ((nh-nl+1+NR_END)*sizeof(float64)));
+  if (!v) nrerror("allocation failure in f64vector()");
   if(!v) return NULL;
   return v-nl+NR_END;
 }
@@ -142,7 +163,7 @@ uint8** ui8matrix(long nrl, long nrh, long ncl, long nch)
 /* --------------------------------------------------- */
 /* allocate an uint8 matrix with subscript range m[nrl..nrh][ncl..nch] */
 {
-  long i, nrow=nrh-nrl+1,ncol=nch-ncl+1;
+  long i, j, nrow=nrh-nrl+1,ncol=nch-ncl+1;
   uint8 **m;
 
   /* allocate pointers to rows */
@@ -159,6 +180,40 @@ uint8** ui8matrix(long nrl, long nrh, long ncl, long nch)
 
   for(i=nrl+1;i<=nrh;i++) m[i]=m[i-1]+ncol;
 
+  for(i = nrl; i < nrh; i++)
+    for(j = ncl; j < nch; j++)
+      m[i][j]=0;
+
+  /* return pointer to array of pointers to rows */
+  return m;
+}
+
+/* --------------------------------------------------- */
+ulong32** long64matrix(long nrl, long nrh, long ncl, long nch)
+/* --------------------------------------------------- */
+/* allocate an uint8 matrix with subscript range m[nrl..nrh][ncl..nch] */
+{
+  long i, j, nrow=nrh-nrl+1,ncol=nch-ncl+1;
+  ulong32 **m;
+
+  /* allocate pointers to rows */
+  m=(ulong32 **) malloc((size_t)((nrow+NR_END)*sizeof(ulong32 *)));
+  if (!m) nrerror("allocation failure 1 in ui8matrix()");
+  m += NR_END;
+  m -= nrl;
+
+  /* allocate rows and set pointers to them */
+  m[nrl]=(ulong32 *) malloc((size_t)((nrow*ncol+NR_END)*sizeof(ulong32)));
+  if (!m[nrl]) nrerror("allocation failure 2 in ui8matrix()");
+  m[nrl] += NR_END;
+  m[nrl] -= ncl;
+
+  for(i=nrl+1;i<=nrh;i++) m[i]=m[i-1]+ncol;
+
+  for(i = nrl; i < nrh; i++)
+    for(j = ncl; j < nch; j++)
+      m[i][j]=0;
+
   /* return pointer to array of pointers to rows */
   return m;
 }
@@ -171,13 +226,13 @@ sint8** si8matrix(long nrl, long nrh, long ncl, long nch)
   sint8 **m;
 
   /* allocate pointers to rows */
-  m=(sint8 **) malloc((size_t)((nrow+NR_END)*sizeof(sint8*)));
+  m=(sint8**) malloc((size_t)((nrow+NR_END)*sizeof(sint8*)));
   if (!m) nrerror("allocation failure 1 in si8matrix()");
   m += NR_END;
   m -= nrl;
 
   /* allocate rows and set pointers to them */
-  m[nrl]=(sint8 *) malloc((size_t)((nrow*ncol+NR_END)*sizeof(sint8)));
+  m[nrl]=(sint8*) malloc((size_t)((nrow*ncol+NR_END)*sizeof(uint8)));
   if (!m[nrl]) nrerror("allocation failure 2 in si8matrix()");
   m[nrl] += NR_END;
   m[nrl] -= ncl;
@@ -227,7 +282,7 @@ sint16** si16matrix(long nrl, long nrh, long ncl, long nch)
   m -= nrl;
 
   /* allocate rows and set pointers to them */
-  m[nrl]=(sint16 *) malloc((size_t)((nrow*ncol+NR_END)*sizeof(sint16)));
+  m[nrl]=(sint16 *) malloc((size_t)((nrow*ncol+NR_END)*sizeof(uint16)));
   if (!m[nrl]) nrerror("allocation failure 2 in si16matrix()");
   m[nrl] += NR_END;
   m[nrl] -= ncl;
@@ -312,6 +367,31 @@ float32** f32matrix(long nrl, long nrh, long ncl, long nch)
   /* return pointer to array of pointers to rows */
   return m;
 }
+/* ----------------------------------------------------- */
+float64** f64matrix(long nrl, long nrh, long ncl, long nch)
+/* ----------------------------------------------------- */
+/* allocate an float32 matrix with subscript range m[nrl..nrh][ncl..nch] */
+{
+    long i, nrow=nrh-nrl+1,ncol=nch-ncl+1;
+    float64 **m;
+    
+    /* allocate pointers to rows */
+    m=(float64 **) malloc((size_t)((nrow+NR_END)*sizeof(float64*)));
+    if (!m) nrerror("allocation failure 1 in f64matrix()");
+    m += NR_END;
+    m -= nrl;
+    
+    /* allocate rows and set pointers to them */
+    m[nrl]=(float64 *) malloc((size_t)((nrow*ncol+NR_END)*sizeof(float64)));
+    if (!m[nrl]) nrerror("allocation failure 2 in f32matrix()");
+    m[nrl] += NR_END;
+    m[nrl] -= ncl;
+    
+    for(i=nrl+1;i<=nrh;i++) m[i]=m[i-1]+ncol;
+    
+    /* return pointer to array of pointers to rows */
+    return m;
+}
 /* --------------------------------------------------- */
 rgb8** rgb8matrix(long nrl, long nrh, long ncl, long nch)
 /* -------------------------------------------------- */
@@ -338,9 +418,16 @@ rgb8** rgb8matrix(long nrl, long nrh, long ncl, long nch)
   return m;
 }
 /* ------------------------------------------- */
+void free_si32vector(sint32 *v, long nl, long nh)
+/* ------------------------------------------- */
+/* free a sint32 vector allocated with si32vector() */
+{
+    free((FREE_ARG) (v+nl-NR_END));
+}
+/* ------------------------------------------- */
 void free_f32vector(float32 *v, long nl, long nh)
 /* ------------------------------------------- */
-/* free a f32 vector allocated with f64vector() */
+/* free a f32 vector allocated with f32vector() */
 {
   free((FREE_ARG) (v+nl-NR_END));
 }
@@ -350,6 +437,14 @@ void free_f64vector(float64 *v, long nl, long nh)
 /* free a double vector allocated with f64vector() */
 {
   free((FREE_ARG) (v+nl-NR_END));
+}
+
+/* ---------------------------------------------------------------- */
+void free_long64matrix(ulong32 **m, long nrl, long nrh, long ncl, long nch)
+/* ---------------------------------------------------------------- */
+{
+  free((FREE_ARG) (m[nrl]+ncl-NR_END));
+  free((FREE_ARG) (m+nrl-NR_END));
 }
 /* ---------------------------------------------------------------- */
 void free_ui8matrix(uint8 **m, long nrl, long nrh, long ncl, long nch)
@@ -400,7 +495,13 @@ void free_f32matrix(float32 **m, long nrl, long nrh, long ncl, long nch)
   free((FREE_ARG) (m[nrl]+ncl-NR_END));
   free((FREE_ARG) (m+nrl-NR_END));
 }
-
+/* ------------------------------------------------------------------ */
+void free_f64matrix(float64 **m, long nrl, long nrh, long ncl, long nch)
+/* ------------------------------------------------------------------ */
+{
+    free((FREE_ARG) (m[nrl]+ncl-NR_END));
+    free((FREE_ARG) (m+nrl-NR_END));
+}
 /* ---------------------------------------------------------------- */
 void free_rgb8matrix(rgb8 **m, long nrl, long nrh, long ncl, long nch)
 /* ---------------------------------------------------------------- */
@@ -409,302 +510,136 @@ void free_rgb8matrix(rgb8 **m, long nrl, long nrh, long ncl, long nch)
   free((FREE_ARG) (m[nrl]+ncl-NR_END));
   free((FREE_ARG) (m+nrl-NR_END));
 }
-/* ------------------------------------------------------- */
-uint8** ui8matrix_map(long nrl, long nrh, long ncl, long nch)
-/* ------------------------------------------------------- */
-{
-    long nrow=nrh-nrl+1;
-    uint8 **m;
-    
-    /* allocate pointers to rows */
-    m=(uint8 **) malloc((size_t)(nrow*sizeof(uint8*)));
-    if (!m) nrerror("allocation failure 1 in ui8matrix_map()");
-    m -= nrl;
-    
-    /* return pointer to array of pointers to rows */
-    return m;
-}
-/* ------------------------------------------------------- */
-sint8** si8matrix_map(long nrl, long nrh, long ncl, long nch)
-/* ------------------------------------------------------- */
-{
-    long nrow=nrh-nrl+1;
-    sint8 **m;
-    
-    /* allocate pointers to rows */
-    m=(sint8 **) malloc((size_t)(nrow*sizeof(sint8*)));
-    if (!m) nrerror("allocation failure 1 in si8matrix_map()");
-    m -= nrl;
-    
-    /* return pointer to array of pointers to rows */
-    return m;
-}
-/* --------------------------------------------------------- */
-sint16** si16matrix_map(long nrl, long nrh, long ncl, long nch)
-/* --------------------------------------------------------- */
-{
-  long nrow=nrh-nrl+1;
-  sint16 **m;
+/* ------------ */
+/* --- zero --- */
+/* ------------ */
 
-  /* allocate pointers to rows */
-  m=(sint16 **) malloc((size_t)(nrow*sizeof(sint16*)));
-  if (!m) nrerror("allocation failure 1 in si16matrix_map()");
-  m -= nrl;
-
-  /* return pointer to array of pointers to rows */
-  return m;
-}
-/* --------------------------------------------------------- */
-uint16** ui16matrix_map(long nrl, long nrh, long ncl, long nch)
-/* --------------------------------------------------------- */
+/* ----------------------------------------- */
+void zero_si32vector(sint32* v, int j0, int j1)
+/* ----------------------------------------- */
 {
-    long nrow=nrh-nrl+1;
-    uint16 **m;
-    
-    /* allocate pointers to rows */
-    m=(uint16 **) malloc((size_t)(nrow*sizeof(uint16*)));
-    if (!m) nrerror("allocation failure 1 in ui16matrix_map()");
-    m -= nrl;
-    
-    /* return pointer to array of pointers to rows */
-    return m;
-}
-/* --------------------------------------------------------- */
-uint32** ui32matrix_map(long nrl, long nrh, long ncl, long nch)
-/* --------------------------------------------------------- */
-{
-    long nrow=nrh-nrl+1;
-    uint32 **m;
-    
-    /* allocate pointers to rows */
-    m=(uint32 **) malloc((size_t)(nrow*sizeof(uint32*)));
-    if (!m) nrerror("allocation failure 1 in ui32matrix_map()");
-    m -= nrl;
-    
-    /* return pointer to array of pointers to rows */
-    return m;
-}
-/* --------------------------------------------------------- */
-sint32** si32matrix_map(long nrl, long nrh, long ncl, long nch)
-/* --------------------------------------------------------- */
-{
-    long nrow=nrh-nrl+1;
-    sint32 **m;
-    
-    /* allocate pointers to rows */
-    m=(sint32 **) malloc((size_t)(nrow*sizeof(sint32*)));
-    if (!m) nrerror("allocation failure 1 in si32matrix_map()");
-    m -= nrl;
-    
-    /* return pointer to array of pointers to rows */
-    return m;
-}
-/* --------------------------------------------------------- */
-float32** f32matrix_map(long nrl, long nrh, long ncl, long nch)
-/* --------------------------------------------------------- */
-{
-    long nrow=nrh-nrl+1;
-    float32 **m;
-    
-    /* allocate pointers to rows */
-    m=(float32 **) malloc((size_t)(nrow*sizeof(float32*)));
-    if (!m) nrerror("allocation failure 1 in f32matrix_map()");
-    m -= nrl;
-    
-    /* return pointer to array of pointers to rows */
-    return m;
-}
-/* ------------------------------------------------------------------------------------------------------ */
-sint8** si8matrix_map_1D_pitch(sint8 **m, long nrl, long nrh, long ncl, long nch, void *data_1D, long pitch)
-/* ------------------------------------------------------------------------------------------------------ */
-{
-    long i;
-    uint8 *p;
-    
-    /* map rows and set pointers to them */
-    m[nrl]= (sint8*) data_1D;
-    m[nrl] -= ncl;
-    
-    //for(i=nrl+1;i<=nrh;i++) m[i]=m[i-1] + pitch;
-    p = (uint8*) m[nrl];
-    for(i=nrl+1;i<=nrh;i++) {
-        p += pitch;
-        m[i] = (sint8*) p;
+    int j;
+    for(j=j0; j<=j1; j++) {
+        v[j] = 0;
     }
+}
+/* ----------------------------------------- */
+void zero_f32vector(float32* v, int j0, int j1)
+/* ----------------------------------------- */
+{
+    int j;
+    for(j=j0; j<=j1; j++) {
+        v[j] = 0;
+    }
+}
+/* ----------------------------------------- */
+void zero_f64vector(float64* v, int j0, int j1)
+/* ----------------------------------------- */
+{
+    int j;
+    for(j=j0; j<=j1; j++) {
+        v[j] = 0;
+    }
+}
+/* ---------------------------------------------------------- */
+void zero_si32matrix(sint32** m, int i0, int i1, int j0, int j1)
+/* ---------------------------------------------------------- */
+{
+    int i;
     
-    /* return pointer to array of pointers to rows */
-    return m;
+    for(i=i0; i<=i1; i++) {
+        zero_si32vector(m[i], j0, j1);
+    }
+}
+/* ---------------------------------------------------------- */
+void zero_f32matrix(float32** m, int i0, int i1, int j0, int j1)
+/* ---------------------------------------------------------- */
+{
+    int i;
+    
+    for(i=i0; i<=i1; i++) {
+        zero_f32vector(m[i], j0, j1);
+    }
+}
+/* ---------------------------------------------------------- */
+void zero_f64matrix(float64** m, int i0, int i1, int j0, int j1)
+/* ---------------------------------------------------------- */
+{
+    int i;
+    
+    for(i=i0; i<=i1; i++) {
+        zero_f64vector(m[i], j0, j1);
+    }
 }
 
-/* ------------------------------------------------------------------------------------------------------ */
-uint8** ui8matrix_map_1D_pitch(uint8 **m, long nrl, long nrh, long ncl, long nch, void *data_1D, long pitch)
-/* ------------------------------------------------------------------------------------------------------ */
-{
-    long i;
-    uint8 *p;
-    
-    /* map rows and set pointers to them */
-    m[nrl]= (uint8*) data_1D;
-    m[nrl] -= ncl;
-    
-    //for(i=nrl+1;i<=nrh;i++) m[i]=m[i-1] + pitch;
-    p = (uint8*) m[nrl];
-    for(i=nrl+1;i<=nrh;i++) {
-        p += pitch;
-        m[i] = (uint8*) p;
-    }
-    
-    /* return pointer to array of pointers to rows */
-    return m;
-}
-/* --------------------------------------------------------------------------------------------------------- */
-sint16** si16matrix_map_1D_pitch(sint16 **m, long nrl, long nrh, long ncl, long nch, void *data_1D, long pitch)
-/* --------------------------------------------------------------------------------------------------------- */
-{
-    long i;
-    uint8 *p;
-    
-    /* map rows and set pointers to them */
-    m[nrl]= (sint16*) data_1D;
-    m[nrl] -= ncl;
-    
-    //for(i=nrl+1;i<=nrh;i++) m[i]=m[i-1] + pitch;
-    p = (uint8*) m[nrl];
-    for(i=nrl+1;i<=nrh;i++) {
-        p += pitch;
-        m[i] = (sint16*) p;
-    }
-    
-    /* return pointer to array of pointers to rows */
-    return m;
-}
+/* ----------------- */
+/* --- set_param --- */
+/* ----------------- */
 
-/* --------------------------------------------------------------------------------------------------------- */
-uint16** ui16matrix_map_1D_pitch(uint16 **m, long nrl, long nrh, long ncl, long nch, void *data_1D, long pitch)
-/* --------------------------------------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------- */
+void set_si32vector_param(sint32 *v, int j0, int j1, sint32 x, sint32 xstep)
+/* ---------------------------------------------------------------------- */
 {
-    long i;
-    uint8 *p;
-    
-    /* map rows and set pointers to them */
-    m[nrl]= (uint16*) data_1D;
-    m[nrl] -= ncl;
-    
-    //for(i=nrl+1;i<=nrh;i++) m[i]=m[i-1] + pitch;
-    p = (uint8*) m[nrl];
-    for(i=nrl+1;i<=nrh;i++) {
-        p += pitch;
-        m[i] = (uint16*) p;
+    int j;   
+    for(j=j0; j<=j1; j++) {
+        v[j] = x;
+        x += xstep;
     }
-    
-    /* return pointer to array of pointers to rows */
-    return m;
 }
-/* --------------------------------------------------------------------------------------------------------- */
-sint32** si32matrix_map_1D_pitch(sint32 **m, long nrl, long nrh, long ncl, long nch, void *data_1D, long pitch)
-/* --------------------------------------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------ */
+void set_f32vector_param(float32 *v, int j0, int j1, float32 x, float32 xstep)
+/* ------------------------------------------------------------------------ */
 {
-    long i;
-    uint8 *p;
-    
-    /* map rows and set pointers to them */
-    m[nrl]= (sint32*) data_1D;
-    m[nrl] -= ncl;
-    
-    //for(i=nrl+1;i<=nrh;i++) m[i]=m[i-1] + pitch;
-    p = (uint8*) m[nrl];
-    for(i=nrl+1;i<=nrh;i++) {
-        p += pitch;
-        m[i] = (sint32*) p;
+    int j;   
+    for(j=j0; j<=j1; j++) {
+        v[j] = x;
+        x += xstep;
     }
-    
-    /* return pointer to array of pointers to rows */
-    return m;
 }
-/* --------------------------------------------------------------------------------------------------------- */
-uint32** ui32matrix_map_1D_pitch(uint32 **m, long nrl, long nrh, long ncl, long nch, void *data_1D, long pitch)
-/* --------------------------------------------------------------------------------------------------------- */
+/* ------------------------------------------------------------------------ */
+void set_f64vector_param(float64 *v, int j0, int j1, float64 x, float64 xstep)
+/* ------------------------------------------------------------------------ */
 {
-    long i;
-    uint8 *p;
-    
-    /* map rows and set pointers to them */
-    m[nrl]= (uint32*) data_1D;
-    m[nrl] -= ncl;
-    
-    //for(i=nrl+1;i<=nrh;i++) m[i]=m[i-1] + pitch;
-    p = (uint8*) m[nrl];
-    for(i=nrl+1;i<=nrh;i++) {
-        p += pitch;
-        m[i] = (uint32*) p;
+    int j;   
+    for(j=j0; j<=j1; j++) {
+        v[j] = x;
+        x += xstep;
     }
-    
-    /* return pointer to array of pointers to rows */
-    return m;
 }
-/* ---------------------------------------------------------------------------------------------------------- */
-float32** f32matrix_map_1D_pitch(float32 **m, long nrl, long nrh, long ncl, long nch, void *data_1D, long pitch)
-/* ---------------------------------------------------------------------------------------------------------- */
+/* ----------------------------------------------------------------------------------------------------- */
+void set_si32matrix_param(sint32 **m, int i0, int i1, int j0, int j1, sint32 x, sint32 xstep, sint32 ystep)
+/* ----------------------------------------------------------------------------------------------------- */
 {
-    long i;
-    uint8 *p;
-    
-    /* map rows and set pointers to them */
-    m[nrl]= (float32*) data_1D;
-    m[nrl] -= ncl;
-    
-    //for(i=nrl+1;i<=nrh;i++) m[i]=m[i-1] + pitch;
-    p = (uint8*) m[nrl];
-    for(i=nrl+1;i<=nrh;i++) {
-        p += pitch;
-        m[i] = (float32*) p;
+    int i;
+    for(i=i0; i<=i1; i++) {
+        set_si32vector_param(m[i], j0, j1, x, xstep);
+        x += ystep;
     }
-    
-    /* return pointer to array of pointers to rows */
-    return m;
 }
-/* -------------------------------------------------------------------- */
-void free_ui8matrix_map(uint8 **m, long nrl, long nrh, long ncl, long nch)
-/* -------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------------------------------------- */
+void set_f32matrix_param(float32 **m, int i0, int i1, int j0, int j1, float32 x, float32 xstep, float32 ystep)
+/* -------------------------------------------------------------------------------------------------------- */
 {
-    free((FREE_ARG)(m+nrl));
+    int i;
+    for(i=i0; i<=i1; i++) {
+        set_f32vector_param(m[i], j0, j1, x, xstep);
+        x += ystep;
+    }
 }
-/* -------------------------------------------------------------------- */
-void free_si8matrix_map(sint8 **m, long nrl, long nrh, long ncl, long nch)
-/* -------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------------------------------------- */
+void set_f64matrix_param(float64 **m, int i0, int i1, int j0, int j1, float64 x, float64 xstep, float64 ystep)
+/* -------------------------------------------------------------------------------------------------------- */
 {
-    free((FREE_ARG)(m+nrl));
+    int i;
+    for(i=i0; i<=i1; i++) {
+        set_f64vector_param(m[i], j0, j1, x, xstep);
+        x += ystep;
+    }
 }
-/* ---------------------------------------------------------------------- */
-void free_ui16matrix_map(uint16 **m, long nrl, long nrh, long ncl, long nch)
-/* ---------------------------------------------------------------------- */
-{
-    free((FREE_ARG)(m+nrl));
-}
-/* ---------------------------------------------------------------------- */
-void free_si16matrix_map(sint16 **m, long nrl, long nrh, long ncl, long nch)
-/* ---------------------------------------------------------------------- */
-{
-    free((FREE_ARG)(m+nrl));
-}
-/* ---------------------------------------------------------------------- */
-void free_ui32matrix_map(uint32 **m, long nrl, long nrh, long ncl, long nch)
-/* ---------------------------------------------------------------------- */
-{
-    free((FREE_ARG)(m+nrl));
-}
-/* ---------------------------------------------------------------------- */
-void free_si32matrix_map(sint32 **m, long nrl, long nrh, long ncl, long nch)
-/* ---------------------------------------------------------------------- */
-{
-    free((FREE_ARG)(m+nrl));
-}
-/* ---------------------------------------------------------------------- */
-void free_f32matrix_map(float32 **m, long nrl, long nrh, long ncl, long nch)
-/* ---------------------------------------------------------------------- */
-{
-    free((FREE_ARG)(m+nrl));
-}
+/* ------------ */
+/* --- copy --- */
+/* ------------ */
+
 /* ----------------------------------------------------------------------------- */
 void copy_ui8matrix_ui8matrix(uint8 **X, int i0, int i1, int j0, int j1, uint8 **Y)
 /* ----------------------------------------------------------------------------- */
@@ -857,6 +792,19 @@ void display_f32vector(float32 *v,long nl,long nh, char *format, char *name)
   }
   putchar('\n');
 }
+/* ---------------------------------------------------------------------- */
+void display_f64vector(float64 *v,long nl,long nh, char *format, char *name)
+/* ---------------------------------------------------------------------- */
+{
+    long i;
+    
+    if(name != NULL) printf("%s", name);
+    
+    for(i=nl; i<=nh; i++) {
+        printf(format, v[i]);
+    }
+    putchar('\n');
+}
 /* ------------------------------------------------------------------------------------------ */
 void display_si8matrix(sint8 **m,long nrl,long nrh,long ncl, long nch, char *format, char *name)
 /* ------------------------------------------------------------------------------------------ */
@@ -962,6 +910,21 @@ void display_f32matrix(float32 **m,long nrl,long nrh,long ncl, long nch, char *f
     putchar('\n');
   }
 }
+/* -------------------------------------------------------------------------------------------- */
+void display_f64matrix(float64 **m,long nrl,long nrh,long ncl, long nch, char *format, char *name)
+/* -------------------------------------------------------------------------------------------- */
+{
+    long i,j;
+    
+    if(name != NULL) puts(name);
+    
+    for(i=nrl; i<=nrh; i++) {
+        for(j=ncl; j<=nch; j++) {
+            printf(format, m[i][j]);
+        }
+        putchar('\n');
+    }
+}
 /* ------------------------ */
 /* -- PGM IO for bmatrix -- */
 /* ------------------------ */
@@ -1029,10 +992,10 @@ uint8** LoadPGM_ui8matrix(char *filename, long *nrl, long *nrh, long *ncl, long 
   long height, width, gris;
   uint8 **m;
   FILE *file;
-  /*int   format;/**/
+  /*int   format;*/
 
   char *buffer;
-  /*char  c;/**/
+  /*char  c;*/
   int i;
   
   buffer = (char*) calloc(80, sizeof(char));
@@ -1097,7 +1060,7 @@ void MLoadPGM_ui8matrix(char *filename, int nrl, int nrh, int ncl, int nch, uint
     width  = atoi(readitem(file, buffer));
     height = atoi(readitem(file, buffer));
     gris   = atoi(readitem(file, buffer));
-    
+     
     for(i=0; i<height; i++) {
         ReadPGMrow(file, width, m[i]);
     }
@@ -1160,10 +1123,10 @@ rgb8** LoadPPM_rgb8matrix(char *filename, long *nrl, long *nrh, long *ncl, long 
   long height, width, gris;
   rgb8 **m;
   FILE *file;
-  /*int   format;/**/
+  /*int   format;*/
 
   char *buffer;
-  /*char  c;/**/
+  /*char  c;*/
   int i;
   
   buffer = (char*) calloc(80, sizeof(char));
