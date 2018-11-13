@@ -3,7 +3,7 @@
 
 #include "nrdef.h"
 #include "nrutil.h"
-#include "matric_roc.h"
+#include "matrice_roc.h"
 #define IMAGEMIN 121
 #define IMAGEMAX 149
 
