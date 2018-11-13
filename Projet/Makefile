@@ -1,5 +1,5 @@
 EXEC=FrameDiff
-SOURCES=$(wildcard *.c)
+SOURCES=nrutil.c mouvement.c test_mouvement.c  #$(wildcard *.c)
 OBJECTS=$(SOURCES:.c=.o)
 CCFLAGS=-Wall -g -lm
 CC=gcc

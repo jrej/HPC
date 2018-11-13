@@ -10,6 +10,73 @@
 
 void copieNB(uint8 **src, uint8 **dst, long nrl, long nrh, long ncl, long nch);
 
+
+//fonction non optimisé
+void test_routine_frameDiff_loop(int seuil)
+{
+
+    char nomImage[50];
+    char nomImage2[50];
+    char nomImageSave[50];
+
+    long nrl, nrh, ncl, nch;
+
+    uint8 **I0 = LoadPGM_ui8matrix("../hall/hall000000.pgm", &nrl, &nrh, &ncl, &nch);
+    uint8 **I1;
+
+    uint8 **E0 =  ui8matrix(nrl, nrh, ncl, nch);
+    uint8 **O0 = ui8matrix(nrl, nrh, ncl, nch);
+
+
+    printf("Frame Different\n");
+
+    for(int i= 1; i <= 299; i++)
+    {
+        sprintf(nomImage, "../hall/hall%06d.pgm", i-1);
+        sprintf(nomImage2, "../hall/hall%06d.pgm", i);
+        printf("img: %s\n", nomImage2);
+
+        
+        //m[nrl..nrh][ncl..nch]
+        
+        I0 =  LoadPGM_ui8matrix(nomImage, &nrl, &nrh, &ncl, &nch);
+        I1 =  LoadPGM_ui8matrix(nomImage2, &nrl, &nrh, &ncl, &nch);
+
+
+        
+        for(int i = nrl; i < nrh; i++ )
+        {
+            for(int j = ncl; j < nch; j++)
+            {
+                O0[i][j] = abs(I1[i][j] - I0[i][j]);
+
+            }
+        }
+        for(int i = nrl; i < nrh; i++ )
+        {
+            for(int j = ncl; j < nch; j++)
+            {
+                if(O0[i][j] < seuil)
+                    E0[i][j] = 0;
+                else
+                    E0[i][j] = 255;
+
+            }
+        }
+
+        sprintf(nomImageSave, "../Save/fd_hall%06d.pgm", i);
+        SavePGM_ui8matrix(E0, nrl, nrh, ncl, nch, nomImageSave); 
+
+    }
+
+    free_ui8matrix(I0, nrl, nrh, ncl, nch);
+    free_ui8matrix(I1, nrl, nrh, ncl, nch);
+    free_ui8matrix(E0, nrl, nrh, ncl, nch);
+    free_ui8matrix(O0, nrl, nrh, ncl, nch);
+}
+
+
+
 void test_routine_sigmaDelta(char* nomFichier1, char* nomFichier2)
 {
 	/*DIR *d;
@@ -54,6 +121,7 @@ void test_routine_sigmaDelta_loop(char* nomDir)
             printf("%s\n", dir->d_name);
 
     closedir(d);*/
+
     
     //m[nrl..nrh][ncl..nch]
     long nrl, nrh, ncl, nch;
@@ -77,6 +145,8 @@ void test_routine_sigmaDelta_loop(char* nomDir)
 
 
     routine_SigmaDelta_step0(I0, M0, V0, nrl, nrh, ncl, nch);
+
+    printf("Sigma Delta\n");
 
     for(i= 1; i <= 299; i++)
     {
@@ -157,6 +227,8 @@ int main(int argc, char* argv[])
     //routine_FrameDifference("../hall/hall000063.pgm", "../hall/hall000064.pgm", atoi(argv[1]));
     //test_routine_sigmaDelta("../hall/hall000063.pgm", "../hall/hall000064.pgm" );
 	//creerPPM();
+
+    test_routine_frameDiff_loop(atoi(argv[1]));
     test_routine_sigmaDelta_loop("../hall");
 
     return 0;
