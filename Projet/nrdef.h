@@ -6,6 +6,8 @@
 #ifndef __NR_DEF_H__
 #define __NR_DEF_H__
 
+#define TLONG 32
+
 typedef unsigned char byte;
 
 typedef          char  int8;
@@ -18,7 +20,7 @@ typedef   signed short sint16;
 
 typedef          int  int32;
 typedef unsigned int uint32;
-typedef unsigned long ulong32; 
+typedef unsigned long ulong32;
 typedef   signed int sint32;
 
 typedef float         float32;
