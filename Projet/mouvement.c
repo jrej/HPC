@@ -19,6 +19,8 @@ int max(int a, int b){
     return a>b ? a:b;
 }
 
+
+/*
 void routine_FrameDifference(char* nomFichier1, char* nomFichier2, int seuil)
 {
     printf("Frame routine Different\n");
@@ -57,6 +59,29 @@ void routine_FrameDifference(char* nomFichier1, char* nomFichier2, int seuil)
     free_ui8matrix(I1, nrl, nrh, ncl, nch);
     free_ui8matrix(E0, nrl, nrh, ncl, nch);
     free_ui8matrix(O0, nrl, nrh, ncl, nch);
+}*/
+
+
+
+
+
+void routine_FrameDifference(uint8 **It, uint8 **Itm1, uint8 **Et, long nrl,long nrh,long ncl,long nch, int seuil)
+{
+    //m[nrl..nrh][ncl..nch]
+
+    uint8 Ot;
+    for(int i = nrl; i <= nrh; i++ )
+    {
+        for(int j = ncl; j <= nch; j++)
+        {
+            Ot = abs(It[i][j] - Itm1[i][j]);
+            if(Ot < seuil)
+                Et[i][j] = 0;
+            else
+                Et[i][j] = 255;
+
+        }
+    }
 }
 
 void routine_SigmaDelta_step0(uint8** I, uint8 **M, uint8 **V, long nrl, long nrh, long ncl, long nch)

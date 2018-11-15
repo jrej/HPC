@@ -531,6 +531,8 @@ int main(int argc, char* argv[])
 
     //test_morpho();
     //test_mouvement(atoi(argv[1]));
+
+    
     test_routine_FrameDifferenceMorpho3x3ouverture(atoi(argv[1]));
     test_routine_FrameDifferenceMorpho3x3ouverture_bin(atoi(argv[1]));
     test_routine_FrameDifferenceMorpho3x3fermeture_bin(atoi(argv[1]));
