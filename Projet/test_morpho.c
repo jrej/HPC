@@ -532,7 +532,7 @@ void test_routine_FrameDifferenceMorpho3x3ouverture_pipe(int seuil)
 }
 
 
-
+/*
 int main(int argc, char* argv[])
 {
 
@@ -555,4 +555,5 @@ int main(int argc, char* argv[])
 
 
     return 0;
-}
+
+}*/
