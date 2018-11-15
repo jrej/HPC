@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "nrdef.h"
+#include "vnrdef.h"
+
 #include "vnrutil.h"
 #include "nrutil.h"
 #include "morpho_simd.h"

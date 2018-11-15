@@ -49,7 +49,11 @@ float32** f32matrix(long nrl, long nrh, long ncl, long nch);
 float64** f64matrix(long nrl, long nrh, long ncl, long nch);
 rgb8** rgb8matrix(long nrl, long nrh, long ncl, long nch);
 
+<<<<<<< HEAD
 void free_long64matrix(ulong32   **m, long nrl, long nrh, long ncl, long nch);
+=======
+void free_long64matrix(ulong32 **m, long nrl, long nrh, long ncl, long nch);
+>>>>>>> 60f2305ae9d0498d7474650f7f5897c17941b30c
 void free_ui8matrix(uint8   **m, long nrl, long nrh, long ncl, long nch);
 void free_si8matrix(sint8   **m, long nrl, long nrh, long ncl, long nch);
 void free_ui16matrix(uint16 **m, long nrl, long nrh, long ncl, long nch);
