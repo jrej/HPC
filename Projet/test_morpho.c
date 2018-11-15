@@ -14,7 +14,7 @@
 
 #include "mymacro.h"
 #include "morpho.h"
-#define NBIMAGES 199
+#define NBIMAGES 299
 #define BORD 2
 
 
@@ -74,6 +74,7 @@ void test_routine_FrameDifferenceMorpho3x3ouverture(int seuil)
     ///////////////////////////////////////////////
     char nomImageLoad[50];// = "car3/car_3";
     char nomImageSave[50];// = "car3Sigma/car_3"
+    strcpy(nomImageSave, "../hallSigma/hall");
     long nrl, nrh, ncl, nch;
     printf("Chargement de ../hall/hall000000.pgm \n");
     uint8 **Itm1 =  LoadPGM_ui8matrix("../hall/hall000000.pgm", &nrl, &nrh, &ncl, &nch);
@@ -81,33 +82,44 @@ void test_routine_FrameDifferenceMorpho3x3ouverture(int seuil)
     uint8 **Et = ui8matrix(nrl-BORD, nrh+BORD, ncl-BORD, nch+BORD);
     uint8 **Et1 = ui8matrix(nrl-BORD, nrh+BORD, ncl-BORD, nch+BORD);
 
-    for(int i = 1; i <= NBIMAGES; i++)
+    for(int i = 0; i <= NBIMAGES; i++)
     {
+        printf("############\n");
         printf("Ouverture de ../hall/hall%06d.pgm\n",i);
         sprintf(nomImageLoad, "../hall/hall%06d.pgm", i);//Image a t
         MLoadPGM_ui8matrix(nomImageLoad, nrl, nrh, ncl, nch, It);
 
         routine_FrameDifference(It, Itm1, Et, nrl,nrh,ncl,nch, seuil);
-        printf("Chargement dans hallFrame3x3\n");
-        sprintf(nomImageSave, "hallFrame3x3O/hall%06d.pgm", i);
+        printf("Chargement dans hallFrame3x3/hall%06d.pgm\n",i);
+        sprintf(nomImageSave, "../hallFrame3x3O/hall%06d.pgm", i);
         //ouverture3x3(Et,Et1, nrl,nrh,ncl,nch);
         CHRONO(ouverture3x3(Et,Et1, nrl,nrh,ncl,nch), cycles);
         cycleTotal+=cycles;
-
-        SavePGM_ui8matrix(Et1, nrl, nrh, ncl, nch, nomImageSave);
+        printf("Sauvegarde de %s\n", nomImageSave );
+        SavePGM_ui8matrix(Et1, nrl, nrh, ncl, nch, &nomImageSave);
+        printf("Sauvegarde Reussi\n" );
+        printf("Coipie\n" );
         copy_ui8matrix_ui8matrix(It, nrl, nrh, ncl, nch, Itm1);
+        printf("copie effectuée\n" );
+        printf(" i = %d\n",i  );
     }
+    printf("Fin traitement des images \n");
 
 
     cycleTotal/=NBIMAGES;
     cycleTotal/=((nch+1)*(nrh+1));
+    printf("cycle totaal %d  \n", cycleTotal);
     BENCH(printf("Cycles Ouverture = "));
     BENCH(printf(format, cycleTotal));
 
     free_ui8matrix(It, nrl, nrh, ncl, nch );
+    printf("Liberation matrix It \n");
     free_ui8matrix(Itm1, nrl, nrh, ncl, nch );
+    printf("Liberation matrix Itm1 \n");
     free_ui8matrix(Et, nrl-BORD, nrh+BORD, ncl-BORD, nch+BORD );
+    printf("Liberation matrix Et \n");
     free_ui8matrix(Et1, nrl-BORD, nrh+BORD, ncl-BORD, nch+BORD );
+    printf("Liberation matrix Et1 \n");
 
 }
 
@@ -181,13 +193,13 @@ void test_routine_FrameDifferenceMorpho3x3ouverture_bin(int seuil)
     ulong32 **Et1Bin = long64matrix(bi0 - BORD, bi1 + BORD, bj0 - 1, bj1 + 1);
     ulong32 **O0 =  long64matrix(bi0 - BORD, bi1 + BORD, bj0 - 1, bj1 + 1);
 
-    for(int i = 1; i <= NBIMAGES; i++)
+    for(int i = 0; i <= NBIMAGES; i++)
     {
         sprintf(nomImageLoad, "../hall/hall%06d.pgm", i);//Image a t
         MLoadPGM_ui8matrix(nomImageLoad, nrl, nrh, ncl, nch, It);
 
         routine_FrameDifference(It, Itm1, Et, nrl,nrh,ncl,nch, seuil);
-        sprintf(nomImageSave, "hallFrame3x3O_bin/hall%06d.pgm", i);
+        sprintf(nomImageSave, "../hallFrame3x3O_bin/hall%06d.pgm", i);
         convFormatToBin(Et, EtBin, nrl, nrh, ncl, nch);
         //ouverture3x3(Et,Et1, nrl,nrh,ncl,nch);
         CHRONO(ouverture3x3_bin(EtBin,Et1Bin, O0, bi0,bi1,bj0,bj1), cycles);
@@ -248,7 +260,7 @@ void test_routine_FrameDifferenceMorpho3x3fermeture_bin(int seuil)
         MLoadPGM_ui8matrix(nomImageLoad, nrl, nrh, ncl, nch, It);
 
         routine_FrameDifference(It, Itm1, Et, nrl,nrh,ncl,nch, seuil);
-        sprintf(nomImageSave, "hallFrame3x3O_bin/hall%06d.pgm", i);
+        sprintf(nomImageSave, "../hallFrame3x3O_bin/hall%06d.pgm", i);
         convFormatToBin(Et, EtBin, nrl, nrh, ncl, nch);
         //ouverture3x3(Et,Et1, nrl,nrh,ncl,nch);
         CHRONO(ouverture3x3_bin(EtBin,Et1Bin, O0, bi0,bi1,bj0,bj1), cycles);
@@ -303,7 +315,7 @@ void test_routine_FrameDifferenceMorpho3x3fermeture(int seuil)
         MLoadPGM_ui8matrix(nomImageLoad, nrl, nrh, ncl, nch, It);
 
         routine_FrameDifference(It, Itm1, Et, nrl,nrh,ncl,nch, seuil);
-        sprintf(nomImageSave, "hallFrame3x3F/hall%06d.pgm", i);
+        sprintf(nomImageSave, "../hallFrame3x3F/hall%06d.pgm", i);
         //fermeture3x3(Et,Et1, nrl,nrh,ncl,nch);
         CHRONO(fermeture3x3(Et,Et1, nrl,nrh,ncl,nch), cycles);
         cycleTotal+=cycles;
@@ -340,7 +352,7 @@ void test_routine_FrameDifferenceMorpho3x3ouvertureFermeture(int seuil)
         MLoadPGM_ui8matrix(nomImageLoad, nrl, nrh, ncl, nch, It);
 
         routine_FrameDifference(It, Itm1, Et, nrl,nrh,ncl,nch, seuil);
-        sprintf(nomImageSave, "hallFrame3x3F/hall%06d.pgm", i);
+        sprintf(nomImageSave, "../hallFrame3x3F/hall%06d.pgm", i);
         ouverture3x3(Et,Et1, nrl,nrh,ncl,nch);
         fermeture3x3(Et1,Et, nrl,nrh,ncl,nch);
         SavePGM_ui8matrix(Et, nrl, nrh, ncl, nch, nomImageSave);
@@ -371,7 +383,7 @@ void test_routine_FrameDifferenceMorpho3x3fermetureOuverture(int seuil)
         MLoadPGM_ui8matrix(nomImageLoad, nrl, nrh, ncl, nch, It);
 
         routine_FrameDifference(It, Itm1, Et, nrl,nrh,ncl,nch, seuil);
-        sprintf(nomImageSave, "hallFrame3x3F/hall%06d.pgm", i);
+        sprintf(nomImageSave, "../hallFrame3x3F/hall%06d.pgm", i);
         fermeture3x3(Et,Et1, nrl,nrh,ncl,nch);
         ouverture3x3(Et1,Et, nrl,nrh,ncl,nch);
         SavePGM_ui8matrix(Et, nrl, nrh, ncl, nch, nomImageSave);
@@ -402,7 +414,7 @@ void test_routine_FrameDifferenceMorpho3x3fermeturefermeture(int seuil)
         MLoadPGM_ui8matrix(nomImageLoad, nrl, nrh, ncl, nch, It);
 
         routine_FrameDifference(It, Itm1, Et, nrl,nrh,ncl,nch, seuil);
-        sprintf(nomImageSave, "car3Frame3x3FF/car_3%03d.pgm", i);
+        sprintf(nomImageSave, "hallFrame3x3FF/hall%06d.pgm", i);
 
         fermeture3x3(Et,Et1, nrl,nrh,ncl,nch);
         fermeture3x3(Et1,Et, nrl,nrh,ncl,nch);
@@ -446,7 +458,7 @@ void test_routine_FrameDifferenceMorpho3x3fermeture_pipe(int seuil)
         MLoadPGM_ui8matrix(nomImageLoad, nrl, nrh, ncl, nch, It);
 
         routine_FrameDifference(It, Itm1, Et, nrl,nrh,ncl,nch, seuil);
-        sprintf(nomImageSave, "hallFrame3x3F_pipe/car_3%03d.pgm", i);
+        sprintf(nomImageSave, "../hallFrame3x3F_pipe/hall%06d.pgm", i);
         //fermeture3x3(Et,Et1, nrl,nrh,ncl,nch);
         CHRONO(fermeture3x3_pipe(Et,Et1, O0, nrl,nrh,ncl,nch), cycles);
         cycleTotal+=cycles;
@@ -496,7 +508,7 @@ void test_routine_FrameDifferenceMorpho3x3ouverture_pipe(int seuil)
         MLoadPGM_ui8matrix(nomImageLoad, nrl, nrh, ncl, nch, It);
 
         routine_FrameDifference(It, Itm1, Et, nrl,nrh,ncl,nch, seuil);
-        sprintf(nomImageSave, "hallFrame3x3F/hall%06d.pgm", i);
+        sprintf(nomImageSave, "../hallFrame3x3F/hall%06d.pgm", i);
         //ouverture3x3(Et,Et1, nrl,nrh,ncl,nch);
         CHRONO(ouverture3x3_pipe(Et,Et1, O0, nrl,nrh,ncl,nch), cycles);
         cycleTotal+=cycles;
@@ -532,7 +544,7 @@ int main(int argc, char* argv[])
     //test_morpho();
     //test_mouvement(atoi(argv[1]));
 
-    
+
     test_routine_FrameDifferenceMorpho3x3ouverture(atoi(argv[1]));
     test_routine_FrameDifferenceMorpho3x3ouverture_bin(atoi(argv[1]));
     test_routine_FrameDifferenceMorpho3x3fermeture_bin(atoi(argv[1]));
