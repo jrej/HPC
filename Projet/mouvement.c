@@ -21,10 +21,12 @@ int max(int a, int b){
 
 void routine_FrameDifference(char* nomFichier1, char* nomFichier2, int seuil)
 {
-    printf("Frame Different\n");
+    printf("Frame routine Different\n");
     //m[nrl..nrh][ncl..nch]
     long nrl, nrh, ncl, nch;
+    printf("Chargement image1 %s\n", nomFichier1);
     uint8 **I0 =  LoadPGM_ui8matrix(nomFichier1, &nrl, &nrh, &ncl, &nch);
+    printf("Chargement image2 %s\n", nomFichier2);
     uint8 **I1 =  LoadPGM_ui8matrix(nomFichier2, &nrl, &nrh, &ncl, &nch);
 
 

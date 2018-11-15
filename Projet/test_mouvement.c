@@ -36,14 +36,14 @@ void test_routine_frameDiff_loop(int seuil)
         sprintf(nomImage2, "../hall/hall%06d.pgm", i);
         printf("img: %s\n", nomImage2);
 
-        
+
         //m[nrl..nrh][ncl..nch]
-        
+
         I0 =  LoadPGM_ui8matrix(nomImage, &nrl, &nrh, &ncl, &nch);
         I1 =  LoadPGM_ui8matrix(nomImage2, &nrl, &nrh, &ncl, &nch);
 
 
-        
+
         for(int i = nrl; i < nrh; i++ )
         {
             for(int j = ncl; j < nch; j++)
@@ -65,7 +65,7 @@ void test_routine_frameDiff_loop(int seuil)
         }
 
         sprintf(nomImageSave, "../Save/fd_hall%06d.pgm", i);
-        SavePGM_ui8matrix(E0, nrl, nrh, ncl, nch, nomImageSave); 
+        SavePGM_ui8matrix(E0, nrl, nrh, ncl, nch, nomImageSave);
 
     }
 
@@ -87,7 +87,7 @@ void test_routine_sigmaDelta(char* nomFichier1, char* nomFichier2)
 			printf("%s\n", dir->d_name);
 
 	closedir(d);*/
-	
+
 
     //m[nrl..nrh][ncl..nch]
     long nrl, nrh, ncl, nch;
@@ -105,7 +105,7 @@ void test_routine_sigmaDelta(char* nomFichier1, char* nomFichier2)
     routine_SigmaDelta_1step(I0, I1, V0, Vt, M0, Mt, Ot, Et, nrl, nrh, ncl, nch);
 
     SavePGM_ui8matrix(Et, nrl, nrh, ncl, nch, "test2.pgm");
-	
+
 }
 
 
@@ -122,7 +122,7 @@ void test_routine_sigmaDelta_loop(char* nomDir)
 
     closedir(d);*/
 
-    
+
     //m[nrl..nrh][ncl..nch]
     long nrl, nrh, ncl, nch;
 
@@ -155,8 +155,8 @@ void test_routine_sigmaDelta_loop(char* nomDir)
         It =  LoadPGM_ui8matrix(nomImage, &nrl, &nrh, &ncl, &nch);
 
         routine_SigmaDelta_1step(I0, It, V0, Vt, M0, Mt, Ot, Et, nrl, nrh, ncl, nch);
-    
-        
+
+
         sprintf(nomImage, "../Save/hall%06d.pgm", i);
         SavePGM_ui8matrix(Et, nrl, nrh, ncl, nch, nomImage);
 
@@ -165,7 +165,7 @@ void test_routine_sigmaDelta_loop(char* nomDir)
         copieNB(Mt, M0, nrl, nrh, ncl, nch);
     }
 
-    
+
 }
 
 
@@ -218,7 +218,7 @@ void creerPPM(){
     }
 
 }
-
+/*
 
 int main(int argc, char* argv[])
 {
@@ -234,3 +234,4 @@ int main(int argc, char* argv[])
     return 0;
 }
 
+*/
