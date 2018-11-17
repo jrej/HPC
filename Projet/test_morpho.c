@@ -108,7 +108,7 @@ void test_routine_FrameDifferenceMorpho3x3ouverture(int seuil)
 
     cycleTotal/=NBIMAGES;
     cycleTotal/=((nch+1)*(nrh+1));
-    printf("cycle totaal %d  \n", cycleTotal);
+  //  printf("cycle totaal %d  \n", cycleTotal);
     BENCH(printf("Cycles ouverture3x3 = "));
     BENCH(printf(format, cycleTotal));
 

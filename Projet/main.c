@@ -68,6 +68,7 @@ int main(int argc, char* argv[])
 
 #endif
 #if OPTI & 0x2
+
     //test_routine_FrameDifference(20);
     printf("OPTI 2  test_routine_sigmaDelta\n");
 
@@ -96,8 +97,9 @@ int main(int argc, char* argv[])
 
 
 #endif
-    creation_matrices_ROC("../hall");
-    difference2Images();
+
+    //creation_matrices_ROC("../hall");
+  //difference2Images();
 
     return 0;
 }

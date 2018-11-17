@@ -355,7 +355,7 @@ void test_routine_FrameDifference_SSE2M(int seuil)
 
      BENCH(cycleTotal/=NBIMAGES);
      BENCH(cycleTotal/=((nch+1)*(nrh+1)));
-     BENCH(printf("Cycles FermetureSSE2 = "));
+     BENCH(printf("Cycles FrameDifferenceSSE2 = "));
      BENCH(printf(format, cycleTotal));
 
 
@@ -444,7 +444,7 @@ void test_routine_sigmaDelta_SSE2()
 
     cycleTotal/=NBIMAGES;
     cycleTotal/=((nch+1)*(nrh+1));
-    BENCH(printf("Cycles SD_SSE2 = "));
+    BENCH(printf("Cycles SigmaDelta_SSE2 = "));
     BENCH(printf(format, cycleTotal));
 
 

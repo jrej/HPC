@@ -11,6 +11,7 @@ void creation_matrices_ROC(char nomDossier[])
 {
 	long nrl, nrh, ncl, nch;
 	char nomImageLoad[100];
+	printf("Dossier::: %s \n ", nomDossier);
 	uint8 **ImageVerite =  LoadPGM_ui8matrix("../hall/hall000000.pgm", &nrl, &nrh, &ncl, &nch);
 	uint8 **ImageTest = ui8matrix(nrl, nrh, ncl, nch);
 	int matRoc[2][2] = {0};

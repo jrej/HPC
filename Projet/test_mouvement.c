@@ -15,7 +15,15 @@ void copieNB(uint8 **src, uint8 **dst, long nrl, long nrh, long ncl, long nch);
 //fonction non optimisé
 void test_routine_frameDiff_loop(int seuil)
 {
+  /////////////// Pour le cycle par point////////////
+      double cycles;
 
+      char *format = "%6.2f \n";
+      double cycleTotal = 0;
+      int iter, niter = 2;
+      int run, nrun = 5;
+      double t0, t1, dt, tmin, t;
+      ///////////////////////////////////////////////
     char nomImage[50];
     char nomImage2[50];
     char nomImageSave[50];
@@ -179,8 +187,8 @@ void test_routine_sigmaDelta_loop(char* nomDir)
     }
     cycleTotal/=NBIMAGES;
     cycleTotal/=((nch+1)*(nrh+1));
-    printf("cycle totaal %d  \n", cycleTotal);
-    BENCH(printf("Cycles Ouverture = "));
+  //  printf("cycle totaal %d  \n", cycleTotal);
+    BENCH(printf("Cycles SigmaDelta = "));
     BENCH(printf(format, cycleTotal));
 
 
