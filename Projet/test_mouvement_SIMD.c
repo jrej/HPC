@@ -257,7 +257,7 @@ void test_routine_FrameDifference_SSE2(int seuil)
 
     for(int i = 1; i <= NBIMAGES; i++)
     {
-        printf("Chargement de l'image hall%06d.pgm\n",i );
+    //    printf("Chargement de l'image hall%06d.pgm\n",i );
         sprintf(nomImageLoad, "../hall/hall%06d.pgm", i);//Image a t
         MLoadPGM_ui8matrix(nomImageLoad, nrl, nrh, ncl, nch, It);
         MatScal2MatSIMD(vIt, It,  vi0, vi1, vj0, vj1);
@@ -267,7 +267,7 @@ void test_routine_FrameDifference_SSE2(int seuil)
         cycleTotal+=cycles;
 
         MatSIMD2MatScal(vEt, Et, vi0, vi1, vj0, vj1);    //On fait la copie d'une matrice SIMD dans une image normale
-        printf("Sauvegarde de l'image hall%06d.pgm dans hallFrameSIMD\n",i );
+        //printf("Sauvegarde de l'image hall%06d.pgm dans hallFrameSIMD\n",i );
         sprintf(nomImageSave, "../hallFrameSIMD/hall%06d.pgm", i);
         SavePGM_ui8matrix(Et, nrl, nrh, ncl, nch, nomImageSave);
         dup_vui8matrix(vIt, vi0, vi1, vj0, vj1, vItm1);
@@ -465,6 +465,8 @@ void test_routine_sigmaDelta_SSE2()
 }
 
 
+/*
+
 int main(int argc, char* argv[])
 {
 
@@ -476,7 +478,6 @@ int main(int argc, char* argv[])
     //test_morpho();
     //test_mouvement(atoi(argv[1]));
 
-/*
     test_routine_FrameDifferenceMorpho3x3ouverture(atoi(argv[1]));
     test_routine_FrameDifferenceMorpho3x3ouverture_bin(atoi(argv[1]));
     test_routine_FrameDifferenceMorpho3x3fermeture_bin(atoi(argv[1]));
@@ -486,8 +487,7 @@ int main(int argc, char* argv[])
 
 
 
-    return 0;
-    */
+
     test_unitaire_FD_SSE2();
     test_unitaire_SD_SSE2();
     test_routine_FrameDifference_SSE2(atoi(argv[1]));
@@ -495,3 +495,4 @@ int main(int argc, char* argv[])
     test_routine_sigmaDelta_SSE2();
     return 0;
 }
+*/
