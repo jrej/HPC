@@ -1,15 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+
 #include "mouvement.h"
 #include "test_mouvement.h"
 #include "test_mouvement_SIMD.h"
-#define NBIMAGES 299
 #include "nrdef.h"
 #include "nrutil.h"
 #include "matrice_roc.h"
 #include "morpho.h"
 #include "test_morpho.h"
 
+
+#define NBIMAGES 299
 
 
 void difference2Images()
@@ -52,11 +54,14 @@ void difference2Images()
 
 }
 
-#define OPTI 3 //1 pour optimisation 2 sans optimisation 3 pour tout 0 pour rien
+#define OPTI 2 //1 pour optimisation 2 sans optimisation 3 pour tout 0 pour rien
 
 
 int main(int argc, char* argv[])
 {
+
+
+
 #if OPTI & 0x1
     printf("OPTI 1  test_routine_FrameDifference_SIMD\n");
     test_routine_FrameDifference_SSE2(20);
@@ -67,14 +72,16 @@ int main(int argc, char* argv[])
     test_routine_FrameDifference_SSE2M(20);
 
 #endif
+
 #if OPTI & 0x2
 
-    //test_routine_FrameDifference(20);
+    printf("OPTI 2  test_routine_FrameDifference\n");
+    test_routine_FrameDifference(20, "../hall");
+    
     printf("OPTI 2  test_routine_sigmaDelta\n");
-
-    //test_routine_sigmaDelta();
-    test_routine_sigmaDelta_loop("../hall");
-    printf("OPTI 2  test_routine_FrameDifferenceMorpho3x3ouverture\n");
+    test_routine_sigmaDelta("../hall");
+    
+    /*printf("OPTI 2  test_routine_FrameDifferenceMorpho3x3ouverture\n");
     test_routine_FrameDifferenceMorpho3x3ouverture(20);
     printf("OPTI 2  test_routine_FrameDifferenceMorpho3x3fermeture\n");
     test_routine_FrameDifferenceMorpho3x3fermeture(20);
@@ -93,13 +100,19 @@ int main(int argc, char* argv[])
     test_routine_FrameDifferenceMorpho3x3ouverture_bin(20);
     printf("OPTI 2  test_routine_FrameDifferenceMorpho3x3ouverture\n");
 
-    test_routine_FrameDifferenceMorpho3x3fermeture_bin(20);
+    test_routine_FrameDifferenceMorpho3x3fermeture_bin(20);*/
 
 
 #endif
 
-    //creation_matrices_ROC("../hall");
-  //difference2Images();
+    printf("///////M_ROC FrameDifference///////\n");
+    matrice_ROC("../hallFD");
+
+    printf("///////M_ROC SigmaDelta///////\n");
+    matrice_ROC("../hallSD");
+
+
+    //difference2Images();
 
     return 0;
 }

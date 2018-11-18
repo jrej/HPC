@@ -8,99 +8,112 @@
 #include "nrutil.h"
 #define BORD 2
 
-void erosion3x3(uint8** X,uint8** Y, long nrl,long nrh,long ncl,long nch)
+
+
+
+
+void erosion3x3(uint8** I, uint8** O, long nrl, long nrh, long ncl, long nch)
 {
     int i,j,k,l;
     uint8 result;
-    for(i=nrl; i<=nrh; i++)
+
+    for(i= nrl; i <= nrh; i++)
     {
-        for(j=ncl; j<=nch; j++)
+        for(j= ncl; j <= nch; j++)
         {
             result = 255;
             for(k = i-1 ; k < i+2 ; k++)
             {
-                for(l = j-1; l<j+2 ; l++)
+                for(l = j-1; l < j+2 ; l++)
                 {
-                    result &= X[k][l];
+                    result &= I[k][l];
                 }
             }
-            Y[i][j] = result;
+
+            O[i][j] = result;
         }
     }
 }
 
-void erosion3x3_bin(ulong32** X,ulong32** Y, long bi0,long bi1,long bj0,long bj1)
+
+void erosion3x3_bin(ulong32** I, ulong32** O, long bi0, long bi1, long bj0, long bj1)
 {
     int i,j,k,l;
     ulong32 result, left, right;
-    for(i=bi0; i<=bi1; i++)
-    {
-        for(j=bj0; j<=bj1; j++)
-        {
-            result = 0;
-            result = ~result;//Pour avoir tous les bits a 1
-            result&=X[i-1][j];
-            result&=X[i][j];
-            result&=X[i+1][j];
 
-            left = (X[i-1][j-1] & X[i][j-1] & X[i+1][j-1]);
+    for(i= bi0; i <= bi1; i++)
+    {
+        for(j= bj0; j <= bj1; j++)
+        {
+
+            //Déroulage des boucles k et l
+            result = 0;
+            result = ~result;
+            result &= I[i-1][j];
+            result &= I[i][j];
+            result &= I[i+1][j];
+
+            left = (I[i-1][j-1] & I[i][j-1] & I[i+1][j-1]);
             left = ( (result >> 1) & ~(1<<(TLONG-1)) ) | (left & 1) << (TLONG-1);
 
-            right = (X[i-1][j+1] & X[i][j+1] & X[i+1][j+1]);
+            right = (I[i-1][j+1] & I[i][j+1] & I[i+1][j+1]);
             right = (result << 1) | (right>>(TLONG-1) & 1) ;
 
             result &= right & left;
 
 
-            Y[i][j] = result;
+            O[i][j] = result;
         }
     }
 }
 
-void dilatation3x3(uint8** X,uint8** Y, long nrl,long nrh,long ncl,long nch)
+void dilatation3x3(uint8** I, uint8** O, long nrl, long nrh, long ncl, long nch)
 {
     int i,j,k,l;
     uint8 result;
-    for(i=nrl; i<=nrh; i++)
+
+    for(i= nrl; i <= nrh; i++)
     {
-        for(j=ncl; j<=nch; j++)
+        for(j= ncl; j <= nch; j++)
         {
             result = 0;
-            for(k = i-1 ; k < i+2 ; k++)
+            for(k= i-1; k < i+2; k++)
             {
-                for(l = j-1; l<j+2 ; l++)
+                for(l= j-1; l < j+2; l++)
                 {
-                    result |= X[k][l];
+                    result |= I[k][l];
                 }
             }
-            Y[i][j] = result;
+
+            O[i][j] = result;
         }
     }
 
 }
-void dilatation3x3_bin(ulong32** X,ulong32** Y, long bi0,long bi1,long bj0,long bj1)
+void dilatation3x3_bin(ulong32** I, ulong32** O, long bi0, long bi1, long bj0, long bj1)
 {
     int i,j,k,l;
     ulong32 result, left, right;
-    for(i=bi0; i<=bi1; i++)
+    for(i= bi0; i <= bi1; i++)
     {
-        for(j=bj0; j<=bj1; j++)
+        for(j= bj0; j <= bj1; j++)
         {
-            result = 0;
-            result|=X[i-1][j];
-            result|=X[i][j];
-            result|=X[i+1][j];
 
-            left = (X[i-1][j-1] | X[i][j-1] | X[i+1][j-1]);
+            //Déroulage des boucles k et l
+            result = 0;
+            result |= I[i-1][j];
+            result |= I[i][j];
+            result |= I[i+1][j];
+
+            left = (I[i-1][j-1] | I[i][j-1] | I[i+1][j-1]);
             left = ( (result >> 1) & ~(1<<(TLONG-1) )) | (left & 1) << (TLONG-1);
 
-            right = (X[i-1][j+1] | X[i][j+1] | X[i+1][j+1]);
+            right = (I[i-1][j+1] | I[i][j+1] | I[i+1][j+1]);
             right = (result << 1) | (right>>(TLONG-1) & 1) ;
             result |= right | left;
 
 
-
-            Y[i][j] = result;
+            O[i][j] = result;
         }
     }
 

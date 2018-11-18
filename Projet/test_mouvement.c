@@ -1,19 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <dirent.h>
+
 #include "nrdef.h"
 #include "nrutil.h"
 #include "mouvement.h"
-#include"mymacro.h"
-#include <dirent.h>
-#define NBIMAGES 199
+#include "mymacro.h"
+#include "test_mouvement.h"
+
+#define NBIMAGES 299
 
 
-
-void copieNB(uint8 **src, uint8 **dst, long nrl, long nrh, long ncl, long nch);
 
 
 //fonction non optimisé
-void test_routine_frameDiff_loop(int seuil)
+void test_routine_FrameDifference(int seuil, char* nomDir)
 {
   /////////////// Pour le cycle par point////////////
       double cycles;
@@ -41,8 +42,8 @@ void test_routine_frameDiff_loop(int seuil)
 
     for(int i= 1; i <= 299; i++)
     {
-        sprintf(nomImage, "../hall/hall%06d.pgm", i-1);
-        sprintf(nomImage2, "../hall/hall%06d.pgm", i);
+        sprintf(nomImage, "%s/hall%06d.pgm", nomDir, i-1);
+        sprintf(nomImage2, "%s/hall%06d.pgm", nomDir, i);
       //  printf("img: %s\n", nomImage2);
 
 
@@ -73,7 +74,7 @@ void test_routine_frameDiff_loop(int seuil)
             }
         }
 
-        sprintf(nomImageSave, "../Save/fd_hall%06d.pgm", i);
+        sprintf(nomImageSave, "../hallFD/hall%06d.pgm", i);
         SavePGM_ui8matrix(E0, nrl, nrh, ncl, nch, nomImageSave);
 
     }
@@ -87,18 +88,9 @@ void test_routine_frameDiff_loop(int seuil)
 }
 
 
-
+/*
 void test_routine_sigmaDelta(char* nomFichier1, char* nomFichier2)
 {
-	/*DIR *d;
-	struct dirent *dir;
-	d = opendir("../hall");
-	if(d)
-		while ((dir = readdir(d)) != NULL)
-			printf("%s\n", dir->d_name);
-
-	closedir(d);*/
-
 
     //m[nrl..nrh][ncl..nch]
     long nrl, nrh, ncl, nch;
@@ -117,22 +109,22 @@ void test_routine_sigmaDelta(char* nomFichier1, char* nomFichier2)
 
     SavePGM_ui8matrix(Et, nrl, nrh, ncl, nch, "test2.pgm");
 
-}
+}*/
 
 
 
 
-void test_routine_sigmaDelta_loop(char* nomDir)
+void test_routine_sigmaDelta(char* nomDir)
 {
-  /////////////// Pour le cycle par point////////////
-      double cycles;
+    /////////////// Pour le cycle par point////////////
+    double cycles;
 
-      char *format = "%6.2f \n";
-      double cycleTotal = 0;
-      int iter, niter = 2;
-      int run, nrun = 5;
-      double t0, t1, dt, tmin, t;
-      ///////////////////////////////////////////////
+    char *format = "%6.2f \n";
+    double cycleTotal = 0;
+    int iter, niter = 2;
+    int run, nrun = 5;
+    double t0, t1, dt, tmin, t;
+    ///////////////////////////////////////////////
 
     /*DIR *d;
     struct dirent *dir;
@@ -153,7 +145,7 @@ void test_routine_sigmaDelta_loop(char* nomDir)
     uint8 **It = NULL;
     uint8 **I0 = NULL;
 
-    sprintf(nomImage, "../hall/hall%06d.pgm", i);
+    sprintf(nomImage, "%s/hall%06d.pgm", nomDir, i);
     I0 =  LoadPGM_ui8matrix(nomImage, &nrl, &nrh, &ncl, &nch);
 
     uint8 **V0 = ui8matrix(nrl, nrh, ncl, nch);
@@ -167,18 +159,18 @@ void test_routine_sigmaDelta_loop(char* nomDir)
     CHRONO(routine_SigmaDelta_step0(I0, M0, V0, nrl, nrh, ncl, nch), cycles);
     cycleTotal+=cycles;
 
-  //  printf("Sigma Delta\n");
+    //printf("Sigma Delta\n");
 
     for(i= 1; i <= 299; i++)
     {
-        sprintf(nomImage, "../hall/hall%06d.pgm", i);
-      //  printf("img: %s\n", nomImage);
-        It =  LoadPGM_ui8matrix(nomImage, &nrl, &nrh, &ncl, &nch);
-
+        sprintf(nomImage, "%s/hall%06d.pgm", nomDir, i);
+        //printf("img: %s\n", nomImage);
+        It = LoadPGM_ui8matrix(nomImage, &nrl, &nrh, &ncl, &nch);
+        
 
         CHRONO(routine_SigmaDelta_1step(I0, It, V0, Vt, M0, Mt, Ot, Et, nrl, nrh, ncl, nch), cycles);
-        cycleTotal+=cycles;
-        sprintf(nomImage, "../Save/hall%06d.pgm", i);
+        cycleTotal+= cycles;
+        sprintf(nomImage, "../hallSD/hall%06d.pgm", i);
         SavePGM_ui8matrix(Et, nrl, nrh, ncl, nch, nomImage);
 
         copieNB(It, I0, nrl, nrh, ncl, nch);
@@ -187,7 +179,7 @@ void test_routine_sigmaDelta_loop(char* nomDir)
     }
     cycleTotal/=NBIMAGES;
     cycleTotal/=((nch+1)*(nrh+1));
-  //  printf("cycle totaal %d  \n", cycleTotal);
+    //printf("cycle totaal %d  \n", cycleTotal);
     BENCH(printf("Cycles SigmaDelta = "));
     BENCH(printf(format, cycleTotal));
 
@@ -196,7 +188,8 @@ void test_routine_sigmaDelta_loop(char* nomDir)
 
 
 
-void copieNB(uint8 **src, uint8 **dst, long nrl, long nrh, long ncl, long nch){
+void copieNB(uint8 **src, uint8 **dst, long nrl, long nrh, long ncl, long nch)
+{
     for(int i = nrl; i < nrh; i++){
         for(int j = ncl; j < nch; j++){
             dst[i][j] = src[i][j];
@@ -205,6 +198,8 @@ void copieNB(uint8 **src, uint8 **dst, long nrl, long nrh, long ncl, long nch){
 }
 
 
+
+/*
 void copieTab(uint8 **src, rgb8 **dst, long nrl, long nrh, long ncl, long nch){
 	for(int i = nrl; i < nrh; i++){
 		for(int j = ncl; j < nch; j++){
@@ -213,8 +208,11 @@ void copieTab(uint8 **src, rgb8 **dst, long nrl, long nrh, long ncl, long nch){
 			dst[i][j].g = src[i][j];
 		}
 	}
-}
+}*/
 
+
+
+/*
 void creerPPM(){
 //  	printf("Creation PPM\n");
 	char nomImageLoad[50];// = "car3/car_3";
@@ -244,6 +242,8 @@ void creerPPM(){
     }
 
 }
+*/
+
 /*
 
 int main(int argc, char* argv[])
