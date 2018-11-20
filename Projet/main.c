@@ -9,6 +9,7 @@
 #include "matrice_roc.h"
 #include "morpho.h"
 #include "test_morpho.h"
+#include "mymacro.h"
 
 
 #define NBIMAGES 299
@@ -54,21 +55,51 @@ void difference2Images()
 
 }
 
-#define OPTI 2 //1 pour optimisation 2 sans optimisation 3 pour tout 0 pour rien
+#define OPTI 3 //1 pour optimisation 2 sans optimisation 3 pour tout 0 pour rien
 
 
 int main(int argc, char* argv[])
 {
+  /////////////// Pour le cycle par point////////////
+  double cycles = 0;
 
+  char *format = "%6.2f \n";
+  double cycleTotal = 0;
+  int iter, niter = 2;
+  int run, nrun = 5;
+  double t0, t1, dt, tmin, t;
+  int nch = 351;
+  int nrh = 258;
+  ///////////////////////////////////////////////
 
-
+test_unitaire_FD_SSE2();
 #if OPTI & 0x1
     printf("OPTI 1  test_routine_FrameDifference_SIMD\n");
-    test_routine_FrameDifference_SSE2(20);
+    CHRONO(test_routine_FrameDifference_SSE2(20), cycles);
+    cycleTotal+=cycles;
+    cycleTotal/=NBIMAGES;
+    cycleTotal/=((nch+1)*(nrh+1));
+    BENCH(printf("Cycles ROUTINE FRAMEdIFF SSE2 = "));
+    BENCH(printf(format, cycleTotal));
+    cycleTotal = 0;
+    cycles = 0 ;
+    printf("OPTI 1  test_routine_FrameDifference_OpenMp\n");
+    CHRONO(test_routine_FrameDifferenceOpenMp(20,"../hall"),cycles);
+    cycleTotal+=cycles;
+    cycleTotal/=NBIMAGES;
+    cycleTotal/=((nch+1)*(nrh+1));
+    BENCH(printf("Cycles ROUTINE FRAMEdIFF OPen MP = "));
+    BENCH(printf(format, cycleTotal));
+    cycleTotal = 0;
+    cycles = 0 ;
+
     printf("OPTI 1  test_routine_sigmaDelta_SIMD\n");
     test_routine_sigmaDelta_SSE2();
-    printf("OPTI 1  test_routine_FrameDifference_SIMDM\n");
 
+    printf("OPTI 1  test_routine_sigmaDelta_OPenMp\n");
+    test_routine_sigmaDeltaOpenMp("../hall");
+
+    printf("OPTI 1  test_routine_FrameDifference_SIMDM\n");
     test_routine_FrameDifference_SSE2M(20);
 
 #endif
@@ -76,11 +107,17 @@ int main(int argc, char* argv[])
 #if OPTI & 0x2
 
     printf("OPTI 2  test_routine_FrameDifference\n");
-    test_routine_FrameDifference(20, "../hall");
-    
+    CHRONO(test_routine_FrameDifference(20,"../hall"),cycles);
+    cycleTotal+=cycles;
+    cycleTotal/=NBIMAGES;
+    cycleTotal/=((nch+1)*(nrh+1));
+    BENCH(printf("Cycles ROUTINE FRAMEdIFF= "));
+    BENCH(printf(format, cycleTotal));
+    cycleTotal = 0;
+    cycles = 0 ;
     printf("OPTI 2  test_routine_sigmaDelta\n");
     test_routine_sigmaDelta("../hall");
-    
+
     /*printf("OPTI 2  test_routine_FrameDifferenceMorpho3x3ouverture\n");
     test_routine_FrameDifferenceMorpho3x3ouverture(20);
     printf("OPTI 2  test_routine_FrameDifferenceMorpho3x3fermeture\n");
@@ -105,14 +142,14 @@ int main(int argc, char* argv[])
 
 #endif
 
-    printf("///////M_ROC FrameDifference///////\n");
-    matrice_ROC("../hallFD");
+  //  printf("///////M_ROC FrameDifference///////\n");
+    //matrice_ROC("../hallFD");
 
-    printf("///////M_ROC SigmaDelta///////\n");
-    matrice_ROC("../hallSD");
+    //printf("///////M_ROC SigmaDelta///////\n");
+    //matrice_ROC("../hallSD");
 
 
-    //difference2Images();
+  //  difference2Images();
 
     return 0;
 }

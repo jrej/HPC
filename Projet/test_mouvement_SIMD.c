@@ -220,7 +220,7 @@ void test_unitaire_SD_SSE2()
 
 void test_routine_FrameDifference_SSE2(int seuil)
 {
-    printf("test_routine_FrameDifference_SSE2\n");
+  //  printf("test_routine_FrameDifference_SSE2\n");
 
     /////////////// Pour le cycle par point////////////
     double cycles;
@@ -276,7 +276,7 @@ void test_routine_FrameDifference_SSE2(int seuil)
 
     cycleTotal/=NBIMAGES;
     cycleTotal/=((nch+1)*(nrh+1));
-    BENCH(printf("Cycles FD_SSE2 = "));
+  //  BENCH(printf("Cycles FD_SSE2 = "));
     BENCH(printf(format, cycleTotal));
 
 
